@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: config
 data:
-  ingress_host: demo.lab.evolveum.com
+  ingress_host: mp01.inalogy.net
   ingress_cert: cert-lab-evolveum
   ingress_class_name: haproxy

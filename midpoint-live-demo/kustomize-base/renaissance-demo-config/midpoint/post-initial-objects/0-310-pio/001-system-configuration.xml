@@ -105,11 +105,17 @@
         </objectTemplateRef>
         <type>c:UserType</type>
     </defaultObjectPolicyConfiguration>
-    <notificationConfiguration>
+    <messageTransportConfiguration>
         <mail>
-            <debug>false</debug>
+            <name>smtp</name>
+            <debug>true</debug>
+            <server>
+                <host>fake-smtp.inalogy.com</host>
+                <port>1025</port>
+            </server>
+            <defaultFrom>midpoint@inalogy.com</defaultFrom>
         </mail>
-    </notificationConfiguration>
+    </messageTransportConfiguration>
     <profilingConfiguration>
         <enabled>false</enabled>
         <requestFilter>false</requestFilter>
