@@ -2,6 +2,7 @@
 
 NAMESPACE=mp-demo
 HOST=demo.example.com
+SMTP_NAME=fake-smtp
 
 while getopts n:c:a:i:h flag
 do
@@ -56,3 +57,4 @@ sed -i "s/ingress_cert: .*/ingress_cert: $CERT/g" kustomize-env-config/options-m
 
 kubectl create namespace $NAMESPACE 2> /dev/null || true
 kubectl apply -k . -n $NAMESPACE
+helm install $SMTP_NAME . -f Chart.yaml -n $NAMESPACE

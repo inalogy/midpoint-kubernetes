@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: fake-smtp-web
+    labels:
+        app: fake-smtp-web
+        chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+        heritage: {{ .Release.Service }}
+        release: {{ .Release.Name }}
+spec:
+    selector:
+        app: fake-smtp
+        release: {{ .Release.Name }}
+    ports:
+        - name: web
+          port: 1080
+    type: ClusterIP
+
+---          
+apiVersion: v1
+kind: Service
+metadata:
+    name: fake-smtp
+    annotations:
+      kubernetes.io/ingress.global-static-ip-name: fake-smtp-static-ip
+    labels:
+        app: fake-smtp
+        chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+        heritage: {{ .Release.Service }}
+        release: {{ .Release.Name }}
+spec:
+    selector:
+        app: fake-smtp
+        release: {{ .Release.Name }}
+    type: ClusterIP
+    ports:
+        - name: smtp
+          port: 1025
+          targetPort: 1025
+          protocol: TCP
+          
