@@ -1,0 +1,9 @@
+embed-server --server-config=standalone-ha.xml --std-out=echo
+batch
+
+echo Configuring node identifier
+/subsystem=transactions:write-attribute(name=node-identifier, value=${jboss.node.name})
+echo Finished configuring node identifier
+
+run-batch
+stop-embedded-server

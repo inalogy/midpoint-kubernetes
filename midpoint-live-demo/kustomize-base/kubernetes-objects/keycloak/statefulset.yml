@@ -1,0 +1,164 @@
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: keycloak-server
+  labels:
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: server
+
+spec:
+  replicas: 1
+  serviceName: keycloak-server
+  podManagementPolicy: Parallel
+
+  updateStrategy:
+    type: RollingUpdate
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: keycloak
+      app.kubernetes.io/component: server
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: keycloak
+        app.kubernetes.io/component: server
+
+    spec:
+      enableServiceLinks: false
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60
+
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+
+      initContainers:
+        - name: extensions
+          image: keycloak-extensions
+          imagePullPolicy: IfNotPresent
+
+          securityContext:
+            allowPrivilegeEscalation: false
+
+          envFrom:
+            - configMapRef:
+                name: keycloak-extension
+
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1600Mi
+            requests:
+              cpu: 250m
+              memory: 1000Mi
+
+          volumeMounts:
+            - name: extensions
+              mountPath: /opt/extensions
+
+        - name: checks
+          image: keycloak-checks
+          imagePullPolicy: IfNotPresent
+
+          securityContext:
+            allowPrivilegeEscalation: false
+
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for database to become ready..."
+              wait-for-it -t 120 ${DB_ADDR}:${DB_PORT}
+              echo "OK ✓"
+
+          envFrom:
+            - configMapRef:
+                name: keycloak-server
+
+          resources:
+            limits:
+              cpu: 1500m
+              memory: 2000Mi
+            requests:
+              cpu: 500m
+              memory: 1000Mi
+
+      containers:
+        - name: server
+          image: keycloak-server
+          imagePullPolicy: IfNotPresent
+
+          securityContext:
+            allowPrivilegeEscalation: false
+
+          env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-user
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-user
+                  key: password
+            - name: KEYCLOAK_USER
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-admin
+                  key: username
+            - name: KEYCLOAK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-admin
+                  key: password
+
+          envFrom:
+            - configMapRef:
+                name: keycloak-server
+            - secretRef:
+                name: keycloak-server
+
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: https
+              containerPort: 8443
+            - name: mgmt
+              containerPort: 9990
+
+          startupProbe:
+            httpGet:
+              path: /auth/
+              port: http
+            failureThreshold: 30
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /auth/
+              port: http
+
+          readinessProbe:
+            httpGet:
+              path: /auth/realms/master
+              port: http
+
+          volumeMounts:
+            - name: extensions
+              mountPath: /opt/jboss/keycloak/providers
+            - name: startup
+              mountPath: /opt/jboss/startup-scripts
+
+      volumes:
+        - name: extensions
+          emptyDir: {}
+        - name: startup
+          configMap:
+            name: keycloak-startup
+            defaultMode: 0755
