@@ -1,12 +1,18 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-patches:
-  - target:
-      kind: Ingress
-    patch: |
-      - op: remove
-        path: /metadata/annotations/kubernetes.io~1ingress.class
+# If you want to run it within the minikube:
+# 1) minikube addons enable ingress
+# 2) uncomment lines bellow
+# patches:
+#   - target:
+#       kind: Ingress
+#     patch: |
+#       - op: remove
+#         path: /metadata/annotations/kubernetes.io~1ingress.class
+# 3) echo "127.0.0.1    demo.example.com >> /etc/hosts"
+#    - or any other domain, that you are using
+# 4) sudo minikube tunnel
 
 replacements:
 - source:
