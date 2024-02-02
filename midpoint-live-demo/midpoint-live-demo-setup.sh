@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 NAMESPACE=mp-demo
 HOST=demo.example.com
@@ -22,14 +23,14 @@ do
     esac
 done
 
-sed -i "s/ingress_host: .*/ingress_host: $HOST/g" kustomize-env-config/options-map.yaml
+sed -i .bak "s/ingress_host: .*/ingress_host: $HOST/g" kustomize-env-config/options-map.yaml
 
 if [ -z $INGRESSCLASS ]
 then
    INGRESSCLASS=$(kubectl get ingressClass -o=jsonpath='{.items[?(@.metadata.annotations.ingressclass\.kubernetes\.io/is-default-class=="true")].metadata.name}')
 fi
 
-sed -i "s/ingress_class_name: .*/ingress_class_name: $INGRESSCLASS/g" kustomize-env-config/options-map.yaml
+sed -i .bak "s/ingress_class_name: .*/ingress_class_name: $INGRESSCLASS/g" kustomize-env-config/options-map.yaml
 
 if [ $CERTADDRESS ]
 then
@@ -44,7 +45,7 @@ basicConstraints = CA:FALSE
 subjectKeyIdentifier = hash
 authorityKeyIdentifier = keyid,issuer:always
 keyUsage = digitalSignature, nonRepudiation, keyEncipherment
-subjectAltName = DNS:demo.example.com
+subjectAltName = DNS:$HOST
 extendedKeyUsage = serverAuth
 EOF
 )
@@ -53,8 +54,8 @@ EOF
    CERT="cert-mp-demo"
 fi
 
-sed -i "s/ingress_cert: .*/ingress_cert: $CERT/g" kustomize-env-config/options-map.yaml
+sed -i .bak "s/ingress_cert: .*/ingress_cert: $CERT/g" kustomize-env-config/options-map.yaml
 
 kubectl create namespace $NAMESPACE 2> /dev/null || true
 kubectl apply -k . -n $NAMESPACE
-helm install $SMTP_NAME . -f Chart.yaml -n $NAMESPACE
+# helm install $SMTP_NAME ./fake-smtp -f ./fake-smtp/values.yaml -n $NAMESPACE

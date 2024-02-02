@@ -1,12 +1,11 @@
+---
+# Source: fake-smtp/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: fake-smtp
   labels:
     app: fake-smtp
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
 spec:
   replicas: 1
   selector:
@@ -14,22 +13,20 @@ spec:
       app: fake-smtp
   template:
     metadata:
-{{- if .Values.podAnnotations }}
-      annotations:
-{{ toYaml .Values.podAnnotations | indent 8 }}
-{{- end }}
       labels:
         app: fake-smtp
-        release: {{ .Release.Name }}
+        release: release-name
     spec:
       containers:
         - name: fake-smtp
           image: maildev/maildev
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MAILDEV_BASE_PATHNAME
+              value: /fake
           ports:
           - name: web 
             containerPort: 1080
           - name: smtp
             containerPort: 1025
             protocol: TCP
-

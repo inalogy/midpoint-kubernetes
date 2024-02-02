@@ -1,6 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
+patches:
+  - target:
+      kind: Ingress
+    patch: |
+      - op: remove
+        path: /metadata/annotations/kubernetes.io~1ingress.class
+
 replacements:
 - source:
     kind: ConfigMap
@@ -12,6 +19,7 @@ replacements:
     fieldPaths:
     - spec.tls.0.hosts.0
     - spec.rules.0.host
+
 - source:
     kind: ConfigMap
     name: config
@@ -21,6 +29,7 @@ replacements:
       kind: Ingress
     fieldPaths:
     - spec.tls.0.secretName
+
 # - source:
 #     kind: ConfigMap
 #     name: config
@@ -38,6 +47,7 @@ resources:
  - kustomize-base/kubernetes-objects/ldap/ldap-service.yml
  - kustomize-base/kubernetes-objects/ldap/ldap.yml
  - kustomize-base/kubernetes-objects/ldap/ldap-admin-service.yml
+
 # MidPoint kubernetes base
  - kustomize-base/kubernetes-objects/mp/mp-ingress.yml
  - kustomize-base/kubernetes-objects/mp/mp-service.yml
@@ -45,34 +55,33 @@ resources:
  - kustomize-base/kubernetes-objects/mp/mp-secret.yml
  - kustomize-base/kubernetes-objects/mp/mp.yml
  - kustomize-base/kubernetes-objects/mp/mp-db-service.yml
+
 # Addressbook kubernetes base
  - kustomize-base/kubernetes-objects/addressbook/addressbook-service.yml
  - kustomize-base/kubernetes-objects/addressbook/addressbook.yml
+
 # HR kubernetes base
  - kustomize-base/kubernetes-objects/hr/hr.yml
  - kustomize-base/kubernetes-objects/hr/hr-service.yml
+ 
 # Apache server kubernetes base
  - kustomize-base/kubernetes-objects/apache/apache.yml
  - kustomize-base/kubernetes-objects/apache/apache-ingress.yml
  - kustomize-base/kubernetes-objects/apache/apache-service.yml
+
 # Tomcat kubernetes base
  - kustomize-base/kubernetes-objects/tomcat/tomcat-hr-ingress.yml
  - kustomize-base/kubernetes-objects/tomcat/tomcat-service.yml
  - kustomize-base/kubernetes-objects/tomcat/tomcat-addressbook-ingress.yml
-#Keycloak
- - kustomize-base/kubernetes-objects/keycloak/service.yml
- - kustomize-base/kubernetes-objects/keycloak/statefulset.yml
 
-images:
-  - name: keycloak-checks
-    newName: quay.io/webhippie/alpine
-    newTag: "3.18"
-  - name: keycloak-extensions
-    newName: quay.io/keycloak/keycloak-init-container
-    newTag: "19.0.3"
-  - name: keycloak-server
-    newName: quay.io/keycloak/keycloak
-    newTag: "22.0.5"
+# Keycloak
+ - kustomize-base/kubernetes-objects/keycloak/
+
+# Fake-smtp
+ - kustomize-base/kubernetes-objects/fakesmtp/
+
+# Odoo
+ - kustomize-base/kubernetes-objects/odoo/
 
 configMapGenerator:
 - name: users-map
@@ -171,34 +180,3 @@ configMapGenerator:
 - name: tomcat-map
   files:
     - kustomize-base/renaissance-demo-config/tomcat/server.xml
-- name: keycloak-server
-  options:
-    labels:
-      app.kubernetes.io/name: keycloak
-      app.kubernetes.io/component: server
-  literals:
-    - DB_VENDOR=postgres
-    - DB_ADDR=postgres-server
-    - DB_PORT=5432
-    - DB_DATABASE=keycloak
-- name: keycloak-extension
-  options:
-    labels:
-      app.kubernetes.io/name: keycloak
-      app.kubernetes.io/component: server
-  literals:
-    - KEYCLOAK_EXTENSIONS=https://github.com/aerogear/keycloak-metrics-spi/releases/download/2.5.1/keycloak-metrics-spi-2.5.1.jar
-- name: keycloak-startup
-  options:
-    labels:
-      app.kubernetes.io/name: keycloak
-      app.kubernetes.io/component: server
-  files:
-    - kustomize-base/kubernetes-objects/keycloak/keycloak.cli
-secretGenerator:
-  - name: keycloak-server
-    options:
-      labels:
-        app.kubernetes.io/name: keycloak
-        app.kubernetes.io/component: server
-    literals: []

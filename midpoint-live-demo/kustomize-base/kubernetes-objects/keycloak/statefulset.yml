@@ -41,14 +41,11 @@ spec:
         - name: extensions
           image: keycloak-extensions
           imagePullPolicy: IfNotPresent
-
           securityContext:
             allowPrivilegeEscalation: false
-
           envFrom:
             - configMapRef:
                 name: keycloak-extension
-
           resources:
             limits:
               cpu: 1000m
@@ -56,30 +53,33 @@ spec:
             requests:
               cpu: 250m
               memory: 1000Mi
-
           volumeMounts:
             - name: extensions
               mountPath: /opt/extensions
 
-        - name: checks
+        - name: wait-for-db
           image: keycloak-checks
           imagePullPolicy: IfNotPresent
-
           securityContext:
             allowPrivilegeEscalation: false
+          volumeMounts:
+              - name: init-db
+                mountPath: /tmp/db/
+              - name: wait-for-it
+                mountPath: /tmp/wait/
+          env:
+            - name: DB_USER
+              value: midpoint
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mp-secret
+                  key: password
 
-          command:
-            - sh
-            - -c
-            - |
-              echo "Waiting for database to become ready..."
-              wait-for-it -t 120 ${DB_ADDR}:${DB_PORT}
-              echo "OK ✓"
-
+          command: ["/bin/bash", "-c", "/tmp/wait/waitforit.sh ${DB_ADDR}:${DB_PORT} -t 180 && /tmp/db/keycloak.sh"]
           envFrom:
             - configMapRef:
                 name: keycloak-server
-
           resources:
             limits:
               cpu: 1500m
@@ -91,32 +91,38 @@ spec:
       containers:
         - name: server
           image: keycloak-server
+          args: ["start-dev", "--db", "postgres", "--db-url", "jdbc:postgresql://${DB_ADDR}:5432/keycloak", "--db-username", "$(DB_USER)", "--db-password", "$(DB_PASSWORD)"]
           imagePullPolicy: IfNotPresent
 
           securityContext:
             allowPrivilegeEscalation: false
 
           env:
+          # TODO: secret for logins to db
             - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-user
-                  key: username
+              value: midpoint
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: postgres-user
+                  name: mp-secret
                   key: password
+            - name: KEYCLOAK_ADMIN
+              value: admin
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: admin
+
             - name: KEYCLOAK_USER
-              valueFrom:
-                secretKeyRef:
-                  name: keycloak-admin
-                  key: username
+              value: admin
+              # valueFrom:
+              #   secretKeyRef:
+              #     name: keycloak-admin
+              #     key: username
             - name: KEYCLOAK_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: keycloak-admin
-                  key: password
+              value: admin
+              # valueFrom:
+              #   secretKeyRef:
+              #     name: keycloak-admin
+              #     key: password
 
           envFrom:
             - configMapRef:
@@ -132,21 +138,9 @@ spec:
             - name: mgmt
               containerPort: 9990
 
-          startupProbe:
-            httpGet:
-              path: /auth/
-              port: http
-            failureThreshold: 30
-            periodSeconds: 10
-
-          livenessProbe:
-            httpGet:
-              path: /auth/
-              port: http
-
           readinessProbe:
             httpGet:
-              path: /auth/realms/master
+              path: /realms/master
               port: http
 
           volumeMounts:
@@ -162,3 +156,11 @@ spec:
           configMap:
             name: keycloak-startup
             defaultMode: 0755
+        - name: init-db
+          configMap:
+            name: keycloak-script-map
+            defaultMode: 0555
+        - name: wait-for-it
+          configMap:
+            name: keycloak-wait-script-map
+            defaultMode: 0555

@@ -1,5 +1,0 @@
----
-image:
-  pullPolicy: IfNotPresent
-ingress:
-  host: fake-smtp.inalogy.com
