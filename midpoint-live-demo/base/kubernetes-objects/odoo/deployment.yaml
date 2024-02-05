@@ -21,7 +21,7 @@ spec:
         - containerPort: 8069
         env:
         - name: HOST
-          value: ${DB_ADDR}
+          value: $(DB_ADDR)
         - name: POSTGRES_DB 
           value: odoo
         - name: USER
