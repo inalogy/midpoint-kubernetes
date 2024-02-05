@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tomcat-hr-ingress
+  annotations: 
+    kubernetes.io/ingress.class: azure/application-gateway  
+    nginx.ingress.kubernetes.io/app-root: /hr
+spec:
+#  ingressClassName: haproxy
+  tls:
+    - hosts:
+        - hr.domain
+      secretName: cert-mp-demo
+  rules:
+    - host: hr.domain
+      http:
+        paths:
+          - path: /hr
+            pathType: Prefix
+            backend:
+              service:
+                name: tomcat-service
+                port:
+                  name: tomcat-port
+

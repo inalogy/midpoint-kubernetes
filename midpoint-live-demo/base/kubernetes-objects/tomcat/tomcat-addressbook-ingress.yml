@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tomcat-addressbook-ingress
+  annotations: 
+    kubernetes.io/ingress.class: azure/application-gateway    
+    nginx.ingress.kubernetes.io/app-root: /addressbook
+spec:
+#  ingressClassName: haproxy
+  tls:
+    - hosts:
+        - addressbook.domain
+      secretName: cert-mp-demo
+  rules:
+    - host: addressbook.domain
+      http:
+        paths:
+          - path: /addressbook
+            pathType: Prefix
+            backend:
+              service:
+                name: tomcat-service
+                port:
+                  name: tomcat-port
+

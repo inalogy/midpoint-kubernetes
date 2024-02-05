@@ -1,0 +1,60 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+   
+resources:
+ - service.yml
+ - statefulset.yml
+ - ingress.yml  
+ - secret-user.yaml
+ - secret-admin.yaml
+
+
+images:
+  - name: keycloak-checks
+    newName: postgres
+    newTag: "alpine3.19"
+  - name: keycloak-extensions
+    newName: quay.io/keycloak/keycloak-init-container
+    newTag: "19.0.3"
+  - name: keycloak-server
+    newName: quay.io/keycloak/keycloak
+    newTag: "23.0.6"
+
+configMapGenerator:
+- name: keycloak-script-map
+  files:
+    - scripts/keycloak.sh
+- name: keycloak-wait-script-map
+  files:
+    - scripts/waitforit.sh
+- name: keycloak-server
+  options:
+    labels:
+      app.kubernetes.io/name: keycloak
+      app.kubernetes.io/component: server
+  literals:
+    - DB_VENDOR=postgres
+    - DB_ADDR=mp-db-service.mp-demo
+    - DB_PORT=5432
+    - DB_DATABASE=keycloak
+- name: keycloak-extension
+  options:
+    labels:
+      app.kubernetes.io/name: keycloak
+      app.kubernetes.io/component: server
+  literals:
+    - KEYCLOAK_EXTENSIONS=https://github.com/aerogear/keycloak-metrics-spi/releases/download/2.5.1/keycloak-metrics-spi-2.5.1.jar
+- name: keycloak-startup
+  options:
+    labels:
+      app.kubernetes.io/name: keycloak
+      app.kubernetes.io/component: server
+  files:
+    - scripts/keycloak.cli
+secretGenerator:
+  - name: keycloak-server
+    options:
+      labels:
+        app.kubernetes.io/name: keycloak
+        app.kubernetes.io/component: server
+    literals: []

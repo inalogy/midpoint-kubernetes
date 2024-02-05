@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config
+data:
+  ingress_host: example.com
+  ingress_cert: cert-mp-demo
+  ingress_class_name: nginx
