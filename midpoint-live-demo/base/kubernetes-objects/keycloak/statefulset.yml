@@ -73,13 +73,13 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mp-secret
-                  key: password
+                  name: configuration-secret
+                  key: db_password
 
           command: ["/bin/bash", "-c", "/tmp/wait/waitforit.sh ${DB_ADDR}:${DB_PORT} -t 180 && /tmp/db/keycloak.sh"]
           envFrom:
             - configMapRef:
-                name: keycloak-server
+                name: database-settings
           resources:
             limits:
               cpu: 1500m
@@ -101,8 +101,8 @@ spec:
             - name: KC_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mp-secret
-                  key: password
+                  name: configuration-secret
+                  key: db_password
             - name: KC_DB
               value: postgres
             - name: KC_DB_URL
@@ -122,7 +122,7 @@ spec:
                   key: password
           envFrom:
             - configMapRef:
-                name: keycloak-server
+                name: database-settings
             - secretRef:
                 name: keycloak-server
           ports:

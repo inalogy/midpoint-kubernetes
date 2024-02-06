@@ -34,8 +34,8 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mp-secret
-                  key: password
+                  name: configuration-secret
+                  key: db_password
           resources: {}
           volumeMounts:
             - name: sql-script

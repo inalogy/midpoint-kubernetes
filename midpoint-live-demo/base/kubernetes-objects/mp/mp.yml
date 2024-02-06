@@ -13,6 +13,43 @@ spec:
         app: mp
     spec:
       volumes:
+        - name: init-db
+          emptyDir: {}
+        - name: update-war-files
+          configMap:
+            name: update-war-files
+            items:
+            - key: update_war_files.sh
+              path: update_war_files.sh
+            defaultMode: 0777
+        - name: hr-properties
+          configMap:
+            name: update-war-files
+            items:
+            - key: jdbc.properties
+              path: jdbc.properties
+            defaultMode: 0555
+        - name: addressbook-properties
+          configMap:
+            name: update-war-files
+            items:
+            - key: application.properties
+              path: application.properties
+            defaultMode: 0555
+
+        - name: addressbook-db-init
+          # init of addressbook db
+          configMap:
+            name: addressbook-script-map
+            defaultMode: 0555
+        - name: hr-db-init
+          configMap:
+            name: hr-script-map
+            defaultMode: 0555
+        - name: wait-for-it
+          configMap:
+            name: keycloak-wait-script-map
+            defaultMode: 0555
         - name: shared-data-tomcat
           emptyDir: {}
         - name: nfs-volume
@@ -21,9 +58,9 @@ spec:
           emptyDir: {}
         - name: mp-lib
           emptyDir: {}
-        - name: mp-secret
+        - name: configuration-secret
           secret:
-            secretName: mp-secret
+            secretName: configuration-secret
             defaultMode: 420
         - name: pio
           projected:
@@ -52,7 +89,100 @@ spec:
           configMap:
             name: extension-map
             defaultMode: 420
+        - name: midpoint-init-db
+          configMap:
+            name: midpoint-create-db
+            defaultMode: 0555
       initContainers:
+      ### Let's init midpoint first
+        - name: init-midpoint-db
+          image: 'evolveum/midpoint:4.8-alpine'
+          command:
+            - /bin/bash
+            - /opt/midpoint/bin/midpoint.sh
+            - init-native
+          env:
+            - name: MP_INIT_DB_CONCAT
+              value: /opt/db-init/010-init.sql
+          resources: {}
+          volumeMounts:
+            - name: init-db
+              mountPath: /opt/db-init
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+
+        - name: init-midpoint-db-create
+          image: postgres:alpine3.19
+          volumeMounts:
+            - name: midpoint-init-db
+              mountPath: /tmp/db/midpoint-db.sh
+            - name: init-db
+              mountPath: /opt/db-init
+            - name: wait-for-it
+              mountPath: /tmp/wait/
+          env:
+            - name: DB_USER
+              value: midpoint
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: configuration-secret
+                  key: db_password
+          envFrom:
+            - configMapRef:
+                name: database-settings
+          command: ["/bin/bash", "-c", "/tmp/wait/waitforit.sh ${DB_ADDR}:${DB_PORT} -t 180 && psql \"postgresql://${DB_USER}:${DB_PASSWORD}@${DB_ADDR}:${DB_PORT}\" -a -q -f /opt/db-init/010-init.sql"]
+
+          
+        - name: addressbook-db-init
+          image: postgres:alpine3.19
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+          volumeMounts:
+              - name: addressbook-db-init
+                mountPath: /tmp/db/
+              - name: wait-for-it
+                mountPath: /tmp/wait/
+          env:
+            - name: DB_USER
+              value: midpoint
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: configuration-secret
+                  key: db_password
+
+          command: ["/bin/bash", "-c", "/tmp/wait/waitforit.sh ${DB_ADDR}:${DB_PORT} -t 180 && /tmp/db/addressbook.sh"]
+          envFrom:
+            - configMapRef:
+                name: database-settings
+
+        - name: hr-db-init
+          image: postgres:alpine3.19
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+          volumeMounts:
+              - name: hr-db-init
+                mountPath: /tmp/db/
+              - name: wait-for-it
+                mountPath: /tmp/wait/
+          env:
+            - name: DB_USER
+              value: midpoint
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: configuration-secret
+                  key: db_password
+
+          command: ["/bin/bash", "-c", "/tmp/wait/waitforit.sh ${DB_ADDR}:${DB_PORT} -t 180 && /tmp/db/hr.sh"]
+          envFrom:
+            - configMapRef:
+                name: database-settings
+
         - name: mp-config-init
           image: 'evolveum/midpoint:4.8-alpine'
           command:
@@ -75,20 +205,20 @@ spec:
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           imagePullPolicy: IfNotPresent
-        - name: init
-          image: 'alpine:3'
-          command:
-            - /bin/sh
-            - '-c'
-            - >-
-              cd /mnt/ && wget
-              https://download.evolveum.com/dummy-hr-and-addressbook-for-live-demo/addressbook.war
-              && wget
-              https://download.evolveum.com/dummy-hr-and-addressbook-for-live-demo/hr.war
+
+        - name: update-war
+          image: 'openjdk:23-slim-bullseye'
+          command: ["/bin/bash", "-c", "ls -la tmp && ls -la /tmp/script/ && /tmp/script/update_war_files.sh"]
           resources: {}
           volumeMounts:
             - name: shared-data-tomcat
               mountPath: /mnt/
+            - name: update-war-files
+              mountPath: "/tmp/script/"
+            - name: hr-properties
+              mountPath: "/tmp/hr/"
+            - name: addressbook-properties
+              mountPath: "/tmp/add/"
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           imagePullPolicy: IfNotPresent
@@ -140,16 +270,18 @@ spec:
             - name: MP_SET_midpoint_repository_jdbcUsername
               value: midpoint
             - name: MP_SET_midpoint_repository_jdbcPassword_FILE
-              value: /opt/midpoint/config-secrets/password
+              value: /opt/midpoint/config-secrets/db_password
             - name: MP_SET_midpoint_constants_LDAPADDRESS
               value: 'ldap-service.$(POD_NS).svc.cluster.local'
+
             - name: MP_SET_midpoint_constants_BOOKADDRESS
-              value: 'addressbook-db-service.$(POD_NS).svc.cluster.local'
+              value: 'postgress-service.$(POD_NS).svc.cluster.local'
             - name: MP_SET_midpoint_constants_BOOKJDBCADDRESS
-              value: 'jdbc:postgresql://addressbook-db-service.$(POD_NS).svc.cluster.local:5432/midpoint'
+              value: 'jdbc:postgresql://postgres-service.$(POD_NS).svc.cluster.local:5432/addressbook'
+
             - name: MP_SET_midpoint_repository_jdbcUrl
               value: >-
-                jdbc:postgresql://mp-db-service.$(POD_NS).svc.cluster.local:5432/midpoint
+                jdbc:postgresql://postgres-service.$(POD_NS).svc.cluster.local:5432/midpoint
             - name: MP_UNSET_midpoint_repository_hibernateHbm2ddl
               value: '1'
             - name: MP_SET_midpoint_nodeIdSource
@@ -166,7 +298,7 @@ spec:
               value: UTC
           resources: {}
           volumeMounts:
-            - name: mp-secret
+            - name: configuration-secret
               mountPath: /opt/midpoint/config-secrets
             - name: pio
               mountPath: /opt/midpoint-dirs-docker-entrypoint/post-initial-objects

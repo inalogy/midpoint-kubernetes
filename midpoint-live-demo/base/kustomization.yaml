@@ -27,6 +27,8 @@ replacements:
 
 resources:
  - kustomize-env-config/options-map.yaml
+ - kustomize-env-config/configuration-secret.yml
+
 # LDAP base
  - kubernetes-objects/ldap/ldap-admin-ingress.yml
  - kubernetes-objects/ldap/ldap-service.yml
@@ -36,19 +38,8 @@ resources:
 # MidPoint kubernetes base
  - kubernetes-objects/mp/mp-ingress.yml
  - kubernetes-objects/mp/mp-service.yml
- - kubernetes-objects/mp/mp-db.yml
- - kubernetes-objects/mp/mp-secret.yml
  - kubernetes-objects/mp/mp.yml
- - kubernetes-objects/mp/mp-db-service.yml
 
-# Addressbook kubernetes base
- - kubernetes-objects/addressbook/addressbook-service.yml
- - kubernetes-objects/addressbook/addressbook.yml
-
-# HR kubernetes base
- - kubernetes-objects/hr/hr.yml
- - kubernetes-objects/hr/hr-service.yml
- 
 # Apache server kubernetes base
  - kubernetes-objects/apache/apache.yml
  - kubernetes-objects/apache/apache-ingress.yml
@@ -68,11 +59,24 @@ resources:
 # Odoo
  - kubernetes-objects/odoo/
 
+# Postgres
+ - kubernetes-objects/db-postgres/
+
 configMapGenerator:
+- name: midpoint-create-db
+  files: 
+    - renaissance-demo-config/midpoint/midpoint-db.sh
+
+- name: update-war-files
+  files:
+    - renaissance-demo-config/tomcat/update_war_files.sh
+    - renaissance-demo-config/addressbook/application.properties
+    - renaissance-demo-config/hr/jdbc.properties
+
 - name: database-settings
   literals:
     - DB_VENDOR=postgres
-    - DB_ADDR=mp-db.service.mp-demo
+    - DB_ADDR=postgres-service.mp-demo
     - DB_PORT=5432
 - name: users-map
   files:

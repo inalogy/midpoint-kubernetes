@@ -1,4 +1,10 @@
 #!/bin/bash
+
+
+## example of usage:
+# ./midpoint-live-demo/midpoint-live-demo-setup.sh -o overlays/nginx -a mydomain.com
+## to delete deployments
+# kustomize build './base' | kubectl delete -n mp-demo -f -
 set -x
 
 NAMESPACE=mp-demo
@@ -26,7 +32,7 @@ do
           echo "-c 	 custom yaml certificate for ingresses. Default certificate is packed with demo. PLEASE USE THE SAME NAME FOR THE FILE AND THE KUBERNETES OBJECT"
           echo "-a 	 custom domain for ingresses. Default domain is example.com. Please be aware that default certificate does work only with default host"
           echo "-i    custom ingressClass name. Default is default on your machine (one with annotation ingressclass.kubernetes.io/is-default-class: true). Make sure that you do have ONE default ingressClass or use this option to set a custom one."
-          echo "-t    do you want to start minikube tunnel?"
+          echo "-t    do you want to start minikube tunnel? default to false"
           ;; 
     esac
 done
@@ -61,8 +67,8 @@ subjectAltName = DNS:*.$DOMAIN
 extendedKeyUsage = serverAuth
 EOF
 )
-   kubectl create secret tls -n $NAMESPACE cert-mp-demo --cert=tls.crt --key=tls.key  # 2> /dev/null || true
-   CERT="cert-mp-demo"
+  kubectl create secret tls -n $NAMESPACE cert-mp-demo --cert=tls.crt --key=tls.key 2> /dev/null || true
+  CERT="cert-mp-demo"
 fi
 
 cd $ROOT_DIR

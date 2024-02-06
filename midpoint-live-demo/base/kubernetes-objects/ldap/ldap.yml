@@ -64,7 +64,7 @@ spec:
             - name: LDAP_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mp-secret
+                  name: configuration-secret
                   key: ldap-password
             - name: LDAP_TLS
               value: 'false'

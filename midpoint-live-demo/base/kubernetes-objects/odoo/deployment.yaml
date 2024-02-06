@@ -29,14 +29,14 @@ spec:
         - name: PASSWORD
           valueFrom:
             secretKeyRef:
-              name: mp-secret
-              key: password
+              name: configuration-secret
+              key: db_password
         volumeMounts:
           - name: odoo-conf
             mountPath: /etc/odoo/
         envFrom:
           - configMapRef:
-              name: keycloak-server
+              name: database-settings
       volumes:
         - name: odoo-conf
           configMap:

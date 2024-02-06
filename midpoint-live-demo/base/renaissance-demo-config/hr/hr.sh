@@ -1,7 +1,14 @@
 #!/bin/bash
 set -e
+set -e
+set +x
+if [ "$( psql "postgresql://$DB_USER:$DB_PASSWORD@$DB_ADDR:5432" -XtAc "SELECT 1 FROM pg_database WHERE datname='hr'" )" = '1' ]
+then
+    echo "Database already exists!"
+    exit 0;
+fi
 
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+psql "postgresql://$DB_USER:$DB_PASSWORD@$DB_ADDR:5432" -v ON_ERROR_STOP=1 <<-EOSQL
 
 --
 -- PostgreSQL database dump
@@ -18,7 +25,11 @@ SET client_min_messages = warning;
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+CREATE DATABASE hr ENCODING = 'UTF8';
+-- # LOCALE_PROVIDER = libc LOCALE = 'en_US.utf8';
+ALTER DATABASE addressbook OWNER TO midpoint;
 
+\connect hr 
 
 --
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
@@ -30,7 +41,7 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET search_path = public, pg_catalog;
 
 --
--- Name: emp; Type: TYPE; Schema: public; Owner: $POSTGRES_USER
+-- Name: emp; Type: TYPE; Schema: public; Owner: midpoint
 --
 
 CREATE TYPE emp AS ENUM (
@@ -41,10 +52,10 @@ CREATE TYPE emp AS ENUM (
 );
 
 
-ALTER TYPE public.emp OWNER TO $POSTGRES_USER;
+ALTER TYPE public.emp OWNER TO midpoint;
 
 --
--- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: $POSTGRES_USER
+-- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: midpoint
 --
 
 CREATE SEQUENCE hibernate_sequence
@@ -55,14 +66,14 @@ CREATE SEQUENCE hibernate_sequence
     CACHE 1;
 
 
-ALTER TABLE public.hibernate_sequence OWNER TO $POSTGRES_USER;
+ALTER TABLE public.hibernate_sequence OWNER TO midpoint;
 
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
 --
--- Name: usershr; Type: TABLE; Schema: public; Owner: $POSTGRES_USER; Tablespace: 
+-- Name: usershr; Type: TABLE; Schema: public; Owner: midpoint; Tablespace: 
 --
 
 CREATE TABLE usershr (
@@ -76,17 +87,17 @@ CREATE TABLE usershr (
 );
 
 
-ALTER TABLE public.usershr OWNER TO $POSTGRES_USER;
+ALTER TABLE public.usershr OWNER TO midpoint;
 
 --
--- Name: hibernate_sequence; Type: SEQUENCE SET; Schema: public; Owner: $POSTGRES_USER
+-- Name: hibernate_sequence; Type: SEQUENCE SET; Schema: public; Owner: midpoint
 --
 
 SELECT pg_catalog.setval('hibernate_sequence', 19, true);
 
 
 --
--- Data for Name: usershr; Type: TABLE DATA; Schema: public; Owner: $POSTGRES_USER
+-- Data for Name: usershr; Type: TABLE DATA; Schema: public; Owner: midpoint
 --
 
 COPY usershr (id, artname, emailaddress, employeenumber, emptype, firstname, surname) FROM stdin;
@@ -98,7 +109,7 @@ COPY usershr (id, artname, emailaddress, employeenumber, emptype, firstname, sur
 
 
 --
--- Name: usershr_pkey; Type: CONSTRAINT; Schema: public; Owner: $POSTGRES_USER; Tablespace: 
+-- Name: usershr_pkey; Type: CONSTRAINT; Schema: public; Owner: midpoint; Tablespace: 
 --
 
 ALTER TABLE ONLY usershr
@@ -110,8 +121,6 @@ ALTER TABLE ONLY usershr
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM $POSTGRES_DB;
-GRANT ALL ON SCHEMA public TO $POSTGRES_DB;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 

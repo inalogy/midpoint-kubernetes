@@ -27,16 +27,6 @@ configMapGenerator:
 - name: keycloak-wait-script-map
   files:
     - scripts/waitforit.sh
-- name: keycloak-server
-  options:
-    labels:
-      app.kubernetes.io/name: keycloak
-      app.kubernetes.io/component: server
-  literals:
-    - DB_VENDOR=postgres
-    - DB_ADDR=mp-db-service.mp-demo
-    - DB_PORT=5432
-    - DB_DATABASE=keycloak
 - name: keycloak-extension
   options:
     labels:
