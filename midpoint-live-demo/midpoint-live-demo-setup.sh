@@ -37,7 +37,11 @@ do
     esac
 done
 
+# replace for all required fields
 sed -i .bak "s/ingress_host: .*/ingress_host: $DOMAIN/g" base/kustomize-env-config/options-map.yaml
+sed -i .bak "s/- DB_ADDR=.*/- DB_ADDR=postgres-service.$NAMESPACE/g" base/kustomization.yaml
+sed -i .bak "s/smtp_server = .*/smtp_server = fake-smtp.$NAMESPACE/g" base/kubernetes-objects/odoo/conf/odoo.conf
+sed -i .bak "s/<host>fake-smtp\..*<\/host>/<host>fake-smtp.$NAMESPACE<\/host>/g" base/renaissance-demo-config/midpoint/post-initial-objects/0-310-pio/001-system-configuration.xml
 
 if [ -z $INGRESSCLASS ]
 then
@@ -46,30 +50,30 @@ fi
 
 sed -i .bak "s/ingress_class_name: .*/ingress_class_name: $INGRESSCLASS/g" base/kustomize-env-config/options-map.yaml
 
-if [ $CERTADDRESS ]
-then
-   kubectl apply -f $CERTADDRESS -n $NAMESPACE 2> /dev/null || true
-   CERT=$(basename $CERTADDRESS)
-else
-   mkdir base/kustomize-env-config/certificate/ 2> /dev/null || true
-   cd base/kustomize-env-config/certificate/
+# if [ $CERTADDRESS ]
+# then
+#    kubectl apply -f $CERTADDRESS -n $NAMESPACE 2> /dev/null || true
+#    CERT=$(basename $CERTADDRESS)
+# else
+#    mkdir base/kustomize-env-config/certificate/ 2> /dev/null || true
+#    cd base/kustomize-env-config/certificate/
 
-   kubectl delete secret -n $NAMESPACE cert-mp-demo || true
-   rm -rf tls.crt tls.key
+#    kubectl delete secret -n $NAMESPACE cert-mp-demo || true
+#    rm -rf tls.crt tls.key
 
-   openssl req -new -sha256 -newkey rsa:2048 -keyout tls.key -nodes -subj "/CN=test CA" -out tls.csr
-   openssl x509 -req -signkey tls.key -in tls.csr -out tls.crt -days 3650 -sha256 -extfile  <(cat <<EOF
-basicConstraints = CA:FALSE
-subjectKeyIdentifier = hash
-authorityKeyIdentifier = keyid,issuer:always
-keyUsage = digitalSignature, nonRepudiation, keyEncipherment
-subjectAltName = DNS:*.$DOMAIN
-extendedKeyUsage = serverAuth
-EOF
-)
+#    openssl req -new -sha256 -newkey rsa:2048 -keyout tls.key -nodes -subj "/CN=test CA" -out tls.csr
+#    openssl x509 -req -signkey tls.key -in tls.csr -out tls.crt -days 3650 -sha256 -extfile  <(cat <<EOF
+# basicConstraints = CA:FALSE
+# subjectKeyIdentifier = hash
+# authorityKeyIdentifier = keyid,issuer:always
+# keyUsage = digitalSignature, nonRepudiation, keyEncipherment
+# subjectAltName = DNS:*.$DOMAIN
+# extendedKeyUsage = serverAuth
+# EOF
+# )
   kubectl create secret tls -n $NAMESPACE cert-mp-demo --cert=tls.crt --key=tls.key 2> /dev/null || true
   CERT="cert-mp-demo"
-fi
+# fi
 
 cd $ROOT_DIR
 sed -i .bak "s/ingress_cert: .*/ingress_cert: $CERT/g" base/kustomize-env-config/options-map.yaml

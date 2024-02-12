@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address Book</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional: Add your own CSS styles -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+            margin-left: 0; /* Remove default margin */
+            padding-left: 0; /* Remove default padding */
+        }
+        .pagination-container {
+            margin-top: 20px; /* Adjust as needed */
+            margin-left: 0; /* Remove default margin */
+            padding-left: 0; /* Remove default padding */
+        }
+    </style>
+</head>
+<body>
+    <h1 class="text-center">HR SYSTEM</h1>
+    <!-- Pagination -->
+    <div class="pagination-container ml-3">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                    <a class="page-link" href="?page={{ page - 1 }}" tabindex="-1" aria-disabled="true">Previous</a>
+                </li>
+                {% for num in range(1, num_pages + 1) %}
+                    <li class="page-item {% if num == page %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+                <li class="page-item {% if page == num_pages %}disabled{% endif %}">
+                    <a class="page-link" href="?page={{ page + 1 }}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="container">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                {% for header in headers %}
+                    <th>{{ header.upper() }}</th>
+                {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for person in people %}
+                <tr>
+                    {% for header in headers %}
+                      {% if header != 'picture' %}
+                        {% if header == 'department' or header == 'position' %}
+                            <td>{{ person.get(header).name }}</td>
+                        {% else %}
+                            <td>{{ person.get(header) }}</td>
+                        {% endif %}
+                      {% elif header == 'picture' %}
+                        <td> <img alt="head" src="data:image/png;base64,{{ person.get(header) }}"></td>
+                      {% endif %}
+                    {% endfor %}
+                    <td>
+                        <button type="button" onclick="deletePerson('{{ person.get('id') }}')" class="btn btn-danger">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+
+    <!-- Bootstrap JS (optional, only if you need JS functionality) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function deletePerson(personId) {
+            if (confirm('Are you sure you want to delete this person?')) {
+                axios.delete('{{ url }}/employees/' + personId)
+                    .then(function(response) {
+                        // Handle success
+                        console.log(response);
+                        window.location.reload();
+                        // Optionally, update the UI or perform other actions
+                    })
+                    .catch(function(error) {
+                        // Handle error
+                        console.error(error);
+                        // Optionally, display an error message to the user
+                    });
+            }
+        }
+    </script>
+</body>
+</html>

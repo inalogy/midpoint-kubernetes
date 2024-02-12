@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: addressbook-be
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: addressbook-be
+  template:
+    metadata:
+      labels:
+        app: addressbook-be
+    spec:
+      volumes:
+        - name: wait-for-it
+          configMap:
+            name: keycloak-wait-script-map
+            defaultMode: 0555
+        - name: addressbook-db-init
+          # init of addressbook db
+          configMap:
+            name: addressbook-script-map
+            defaultMode: 0555            
+      initContainers:
+        - name: addressbook-db-init
+          image: postgres:alpine3.19
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+          volumeMounts:
+              - name: addressbook-db-init
+                mountPath: /tmp/db/
+              - name: wait-for-it
+                mountPath: /tmp/wait/
+          env:
+            - name: DB_USER
+              value: midpoint
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: configuration-secret
+                  key: db_password
+          command: ["/bin/bash", "-c", "/tmp/wait/waitforit.sh ${DB_ADDR}:${DB_PORT} -t 180 && /tmp/db/addressbook.sh"]
+          envFrom:
+            - configMapRef:
+                name: database-settings
+      containers:
+        - name: addresbook-be
+          image: 'inalogy/addressbook-be'
+          ports:
+            - name: be
+              containerPort: 8000
+              protocol: TCP
+          env:
+            - name: DATABASE_NAME
+              value: addressbook
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: configuration-secret
+                  key: db_password
+
+            - name: DATABASE_USER
+              value: $(DB_USER)
+            - name: DATABASE_HOST
+              value: $(DB_ADDR)
+            - name: DATABASE_PORT
+              value: $(DB_PORT)
+            - name: POD_NS
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+          envFrom:
+            - configMapRef:
+                name: database-settings
+      restartPolicy: Always
+

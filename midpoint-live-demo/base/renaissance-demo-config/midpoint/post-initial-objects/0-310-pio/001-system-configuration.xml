@@ -110,10 +110,10 @@
             <name>smtp</name>
             <debug>true</debug>
             <server>
-                <host>fake-smtp.inalogy.com</host>
+                <host>fake-smtp.mp-demo</host>
                 <port>1025</port>
             </server>
-            <defaultFrom>midpoint@inalogy.com</defaultFrom>
+            <defaultFrom>midpoint@demo.com</defaultFrom>
         </mail>
     </messageTransportConfiguration>
     <profilingConfiguration>
