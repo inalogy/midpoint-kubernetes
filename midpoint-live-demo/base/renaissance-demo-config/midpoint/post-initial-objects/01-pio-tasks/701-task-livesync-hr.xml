@@ -1,0 +1,27 @@
+<task xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3" xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3" xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3" xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" oid="10000000-0000-0000-5555-555500000001">
+    <name>Live Synchronization: HR Resource</name>
+    <assignment>
+        <targetRef oid="00000000-0000-0000-0000-000000000504" relation="org:default" type="c:ArchetypeType"/>
+    </assignment>
+
+    <taskIdentifier>10000000-0000-0000-5555-555500000001</taskIdentifier>
+    <ownerRef xmlns:tns="http://midpoint.evolveum.com/xml/ns/public/common/common-3" oid="00000000-0000-0000-0000-000000000002" type="tns:UserType"/>
+    <executionState>runnable</executionState>
+    <objectRef oid="9f232517-4240-40b2-8e54-8b13a034fe88" type="c:ResourceType"/>
+    <schedule>
+        <recurrence>recurring</recurrence>
+        <interval>25</interval>
+    </schedule>
+
+    <activity>
+        <work>
+            <liveSynchronization>
+                <resourceObjects>
+                    <resourceRef oid="9f232517-4240-40b2-8e54-8b13a034fe88" relation="org:default" type="c:ResourceType"/>
+                    <kind>account</kind>
+                    <intent>default</intent>
+                </resourceObjects>
+            </liveSynchronization>
+        </work>
+    </activity>
+</task>

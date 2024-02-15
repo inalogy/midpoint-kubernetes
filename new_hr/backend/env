@@ -1,5 +1,0 @@
-export DATABASE_USER="midpoint"
-export DATABASE_PASSWORD="T0p-secret"
-export DATABASE_HOST="localhost"
-export DATABASE_PORT="5432"
-export DATABASE_NAME="inalogy-hr"

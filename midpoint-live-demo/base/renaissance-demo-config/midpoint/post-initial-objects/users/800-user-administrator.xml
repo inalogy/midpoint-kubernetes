@@ -27,7 +27,7 @@
     <c:credentials xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3">
         <c:password>
             <c:value>
-         		<t:clearValue>5ecr3t</t:clearValue>
+         		<t:clearValue>5eCr3t01</t:clearValue>
          	</c:value>
         </c:password>
     </c:credentials>

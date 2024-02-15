@@ -68,9 +68,11 @@ spec:
                - configMap:
                    name: users-map
                - configMap:
-                   name: pio-map-1
+                   name: pio-map-0
                - configMap:
-                   name: pio-map-2
+                   name: pio-map-1
+              #  - configMap:
+              #      name: pio-map-2
                - configMap:
                    name: roles-map
         - name: login-page
@@ -96,7 +98,8 @@ spec:
       initContainers:
       ### Let's init midpoint first
         - name: init-midpoint-db
-          image: 'evolveum/midpoint:4.8-alpine'
+          # image: 'evolveum/midpoint:4.8.1-alpine'
+          image: 'inalogy/midpoint:4.8.1-alpine'
           command:
             - /bin/bash
             - /opt/midpoint/bin/midpoint.sh
@@ -110,10 +113,10 @@ spec:
               mountPath: /opt/db-init
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
         - name: init-midpoint-db-create
-          image: postgres:alpine3.19
+          image: 'postgres:16-alpine'
           volumeMounts:
             - name: midpoint-init-db
               mountPath: /tmp/db/midpoint-db.sh
@@ -135,7 +138,8 @@ spec:
           command: ["/bin/bash", "-c", "/tmp/wait/waitforit.sh ${DB_ADDR}:${DB_PORT} -t 180 && psql \"postgresql://${DB_USER}:${DB_PASSWORD}@${DB_ADDR}:${DB_PORT}\" -a -q -f /opt/db-init/010-init.sql"]
 
         - name: mp-config-init
-          image: 'evolveum/midpoint:4.8-alpine'
+          image: 'inalogy/midpoint:4.8.1-alpine'
+          # image: 'evolveum/midpoint:4.8.1-alpine'
           command:
             - /bin/bash
             - "-c"
@@ -155,11 +159,12 @@ spec:
               mountPath: /mnt/lib
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
       containers:
         - name: mp
-          image: 'evolveum/midpoint:4.8-alpine'
+          # image: 'evolveum/midpoint:4.8.1-alpine'
+          image: 'inalogy/midpoint:4.8.1-alpine'
           ports:
             - name: gui
               containerPort: 8080
@@ -191,6 +196,8 @@ spec:
               value: 'jdbc:postgresql://postgres-service.$(POD_NS).svc.cluster.local:5432/addressbook'
 
             - name: MP_SET_midpoint_constants_INALOGYHR
+              value: 'postgres-service.$(POD_NS).svc.cluster.local'
+            - name: MP_SET_midpoint_constants_INALOGYHRJDBC
               value: 'jdbc:postgresql://postgres-service.$(POD_NS).svc.cluster.local:5432/inalogy-hr'
 
             - name: MP_SET_midpoint_repository_jdbcUrl

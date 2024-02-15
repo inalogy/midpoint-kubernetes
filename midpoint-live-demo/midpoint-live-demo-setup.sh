@@ -41,7 +41,7 @@ done
 sed -i .bak "s/ingress_host: .*/ingress_host: $DOMAIN/g" base/kustomize-env-config/options-map.yaml
 sed -i .bak "s/- DB_ADDR=.*/- DB_ADDR=postgres-service.$NAMESPACE/g" base/kustomization.yaml
 sed -i .bak "s/smtp_server = .*/smtp_server = fake-smtp.$NAMESPACE/g" base/kubernetes-objects/odoo/conf/odoo.conf
-sed -i .bak "s/<host>fake-smtp\..*<\/host>/<host>fake-smtp.$NAMESPACE<\/host>/g" base/renaissance-demo-config/midpoint/post-initial-objects/0-310-pio/001-system-configuration.xml
+sed -i .bak "s/<host>fake-smtp\..*<\/host>/<host>fake-smtp.$NAMESPACE<\/host>/g" base/renaissance-demo-config/midpoint/post-initial-objects/00-pio/001-system-configuration.xml
 
 if [ -z $INGRESSCLASS ]
 then

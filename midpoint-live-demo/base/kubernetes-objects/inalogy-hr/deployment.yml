@@ -1,25 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hr-be
+  name: hr
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hr-be
+      app: hr
   template:
     metadata:
       labels:
-        app: hr-be
+        app: hr
     spec:
       initContainers:
          - name: init-hr-db
-           image: 'inalogy/hr-be'
+           image: 'inalogy/hr'
            imagePullPolicy: Always
-           command: ["python", "/root/backend.py", "init-db"]
+           command: ["python", "/root/main.py", "init-db"]
            env:
-             - name: APP_ORIGIN
-               value: "*"
              - name: DATABASE_NAME
                value: inalogy-hr 
 
@@ -43,17 +41,18 @@ spec:
              - configMapRef:
                  name: database-settings
       containers:
-        - name: hr-be
-          image: 'inalogy/hr-be'
+        - name: hr
+          image: 'inalogy/hr'
           imagePullPolicy: Always
           ports:
-            - name: be
+            - name: hr
               containerPort: 8000
               protocol: TCP
           env:
             - name: DATABASE_NAME
               value: inalogy-hr 
-
+            - name: APP_ORIGIN
+              value: "*"
             - name: DATABASE_USER
               value: $(DB_USER)
             - name: DATABASE_PASSWORD
@@ -68,6 +67,5 @@ spec:
           envFrom:
             - configMapRef:
                 name: database-settings
-
       restartPolicy: Always
 

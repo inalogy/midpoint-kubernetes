@@ -1,0 +1,148 @@
+<archetype xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3" xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3" xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3" xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" oid="00000000-0000-0000-0000-000000000702" version="6">
+    <name>Person</name>
+    <description>Archetype for person users.</description>
+    <metadata>
+        <requestTimestamp>2024-02-14T09:52:00.267Z</requestTimestamp>
+        <createTimestamp>2024-02-14T09:52:01.165Z</createTimestamp>
+        <createChannel>http://midpoint.evolveum.com/xml/ns/public/common/channels-3#init</createChannel>
+        <modifyTimestamp>2024-02-14T09:57:06.737Z</modifyTimestamp>
+        <modifierRef oid="00000000-0000-0000-0000-000000000002" relation="org:default" type="c:UserType">
+            <!-- administrator -->
+        </modifierRef>
+        <modifyChannel>http://midpoint.evolveum.com/xml/ns/public/common/channels-3#user</modifyChannel>
+    </metadata>
+    <operationExecution id="3">
+        <recordType>simple</recordType>
+        <timestamp>2024-02-12T13:49:59.917Z</timestamp>
+        <operation>
+            <objectDelta>
+                <t:changeType>add</t:changeType>
+                <t:objectType>c:ArchetypeType</t:objectType>
+            </objectDelta>
+            <executionResult>
+                <operation>com.evolveum.midpoint.model.impl.lens.ChangeExecutor.executeDelta</operation>
+                <status>success</status>
+                <importance>normal</importance>
+                <token>1000000000000000565</token>
+            </executionResult>
+            <objectName>Person</objectName>
+        </operation>
+        <status>success</status>
+        <channel>http://midpoint.evolveum.com/xml/ns/public/common/channels-3#init</channel>
+    </operationExecution>
+    <operationExecution id="5">
+        <recordType>simple</recordType>
+        <timestamp>2024-02-13T13:27:36.577Z</timestamp>
+        <operation>
+            <objectDelta>
+                <t:changeType>modify</t:changeType>
+                <t:objectType>c:ArchetypeType</t:objectType>
+            </objectDelta>
+            <executionResult>
+                <operation>com.evolveum.midpoint.model.impl.lens.ChangeExecutor.executeDelta</operation>
+                <status>success</status>
+                <importance>normal</importance>
+                <token>1000000000000135110</token>
+            </executionResult>
+            <objectName>Person</objectName>
+        </operation>
+        <status>success</status>
+        <initiatorRef oid="00000000-0000-0000-0000-000000000002" relation="org:default" type="c:UserType">
+            <!-- administrator -->
+        </initiatorRef>
+        <channel>http://midpoint.evolveum.com/xml/ns/public/common/channels-3#user</channel>
+    </operationExecution>
+    <operationExecution id="6">
+        <recordType>simple</recordType>
+        <timestamp>2024-02-14T09:52:02.316Z</timestamp>
+        <operation>
+            <objectDelta>
+                <t:changeType>add</t:changeType>
+                <t:objectType>c:ArchetypeType</t:objectType>
+            </objectDelta>
+            <executionResult>
+                <operation>com.evolveum.midpoint.model.impl.lens.ChangeExecutor.executeDelta</operation>
+                <status>success</status>
+                <importance>normal</importance>
+                <token>1000000000000000762</token>
+            </executionResult>
+            <objectName>Person</objectName>
+        </operation>
+        <operation>
+            <objectDelta>
+                <t:changeType>modify</t:changeType>
+                <t:objectType>c:ArchetypeType</t:objectType>
+            </objectDelta>
+            <executionResult>
+                <operation>com.evolveum.midpoint.model.impl.lens.ChangeExecutor.executeDelta</operation>
+                <status>success</status>
+                <importance>normal</importance>
+                <token>1000000000000000763</token>
+            </executionResult>
+            <objectName>Person</objectName>
+        </operation>
+        <status>success</status>
+        <channel>http://midpoint.evolveum.com/xml/ns/public/common/channels-3#init</channel>
+    </operationExecution>
+    <operationExecution id="8">
+        <recordType>simple</recordType>
+        <timestamp>2024-02-14T09:57:09.486Z</timestamp>
+        <operation>
+            <objectDelta>
+                <t:changeType>modify</t:changeType>
+                <t:objectType>c:ArchetypeType</t:objectType>
+            </objectDelta>
+            <executionResult>
+                <operation>com.evolveum.midpoint.model.impl.lens.ChangeExecutor.executeDelta</operation>
+                <status>success</status>
+                <importance>normal</importance>
+                <token>1000000000000006876</token>
+            </executionResult>
+            <objectName>Person</objectName>
+        </operation>
+        <status>success</status>
+        <initiatorRef oid="00000000-0000-0000-0000-000000000002" relation="org:default" type="c:UserType">
+            <!-- administrator -->
+        </initiatorRef>
+        <channel>http://midpoint.evolveum.com/xml/ns/public/common/channels-3#user</channel>
+    </operationExecution>
+    <assignment id="1">
+        <identifier>holderType</identifier>
+        <metadata>
+            <requestTimestamp>2024-02-14T09:52:00.267Z</requestTimestamp>
+            <createTimestamp>2024-02-14T09:52:01.165Z</createTimestamp>
+            <createChannel>http://midpoint.evolveum.com/xml/ns/public/common/channels-3#init</createChannel>
+        </metadata>
+        <activation>
+            <effectiveStatus>enabled</effectiveStatus>
+        </activation>
+        <assignmentRelation id="2">
+            <holderType>UserType</holderType>
+        </assignmentRelation>
+    </assignment>
+    <iteration>0</iteration>
+    <iterationToken/>
+    <activation>
+        <effectiveStatus>enabled</effectiveStatus>
+        <enableTimestamp>2024-02-12T13:49:59.709Z</enableTimestamp>
+    </activation>
+    <inducement id="7">
+        <targetRef oid="a2850bf8-72f3-4100-8a46-d155b6d4b929" relation="org:default" type="c:RoleType">
+            <!-- AddressbookRole -->
+        </targetRef>
+    </inducement>
+    <archetypePolicy>
+        <display>
+            <label>Person</label>
+            <pluralLabel>Persons</pluralLabel>
+            <tooltip>Person</tooltip>
+            <icon>
+                <cssClass>fa fa-circle-user</cssClass>
+                <color>green</color>
+            </icon>
+        </display>
+        <objectTemplateRef oid="00000000-0000-0000-0000-000000000380" relation="org:default" type="c:ObjectTemplateType">
+            <!-- Person Object Template -->
+        </objectTemplateRef>
+    </archetypePolicy>
+</archetype>

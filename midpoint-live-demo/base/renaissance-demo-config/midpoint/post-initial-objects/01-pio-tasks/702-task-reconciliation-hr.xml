@@ -1,0 +1,68 @@
+<task xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3" xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3" xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3" xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" oid="10000000-0000-0000-5555-555500000002">
+    <name>Reconciliation HR Resource</name>
+       <assignment id="1">
+        <metadata>
+            <requestTimestamp>2024-02-15T10:55:05.262Z</requestTimestamp>
+            <requestorRef oid="00000000-0000-0000-0000-000000000002" relation="org:default" type="c:UserType">
+                <!-- administrator -->
+            </requestorRef>
+            <createTimestamp>2024-02-15T10:55:05.287Z</createTimestamp>
+            <creatorRef oid="00000000-0000-0000-0000-000000000002" relation="org:default" type="c:UserType">
+                <!-- administrator -->
+            </creatorRef>
+            <createChannel>http://midpoint.evolveum.com/xml/ns/public/common/channels-3#user</createChannel>
+        </metadata>
+        <targetRef oid="00000000-0000-0000-0000-000000000501" relation="org:default" type="c:ArchetypeType">
+            <!-- Reconciliation task -->
+        </targetRef>
+        <activation>
+            <effectiveStatus>enabled</effectiveStatus>
+        </activation>
+    </assignment>
+    <iteration>0</iteration>
+    <iterationToken/>
+    <archetypeRef oid="00000000-0000-0000-0000-000000000501" relation="org:default" type="c:ArchetypeType">
+        <!-- Reconciliation task -->
+    </archetypeRef>
+    <roleMembershipRef oid="00000000-0000-0000-0000-000000000501" relation="org:default" type="c:ArchetypeType">
+        <!-- Reconciliation task -->
+        <_metadata>
+            <storage>
+                <createTimestamp>2024-02-15T10:55:05.278Z</createTimestamp>
+            </storage>
+            <provenance>
+                <assignmentPath>
+                    <sourceRef oid="f9ba94e5-7d45-4fbe-ab01-e386e0b6c59c" relation="org:default" type="c:TaskType"/>
+                    <segment>
+                        <segmentOrder>1</segmentOrder>
+                        <assignmentId>1</assignmentId>
+                        <targetRef oid="00000000-0000-0000-0000-000000000501" relation="org:default" type="c:ArchetypeType"/>
+                        <matchingOrder>true</matchingOrder>
+                    </segment>
+                </assignmentPath>
+            </provenance>
+        </_metadata>
+    </roleMembershipRef>
+    <taskIdentifier>1707990440010-31981-1</taskIdentifier>
+    <ownerRef xmlns:tns="http://midpoint.evolveum.com/xml/ns/public/common/common-3" oid="00000000-0000-0000-0000-000000000002" type="tns:UserType"/>
+    <executionState>runnable</executionState>
+    <schedulingState>ready</schedulingState>
+    <objectRef oid="9f232517-4240-40b2-8e54-8b13a034fe88" type="c:ResourceType"/>
+    <schedule>
+        <cronLikePattern>0 0 0 * * ?</cronLikePattern>
+    </schedule>
+    <activity>
+        <work>
+            <reconciliation>
+                <resourceObjects>
+                    <resourceRef oid="9f232517-4240-40b2-8e54-8b13a034fe88" relation="org:default" type="c:ResourceType">
+                        <!-- HR-NEW -->
+                    </resourceRef>
+                    <kind>account</kind>
+                    <intent>default</intent>
+                    <objectclass>ri:AccountObjectClass</objectclass>
+                </resourceObjects>
+            </reconciliation>
+        </work>
+    </activity>
+</task>

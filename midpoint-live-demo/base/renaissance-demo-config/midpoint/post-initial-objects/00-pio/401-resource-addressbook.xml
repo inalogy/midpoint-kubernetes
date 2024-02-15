@@ -1,0 +1,338 @@
+<resource xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3" xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3" xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3" xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" oid="ae3f96d1-e8ed-4b39-9c34-bda632d40fa0" version="12">
+    <name>Addressbook</name>
+    <metadata>
+        <requestTimestamp>2024-02-12T15:17:21.606Z</requestTimestamp>
+        <requestorRef oid="00000000-0000-0000-0000-000000000002" relation="org:default" type="c:UserType"/>
+        <createTimestamp>2024-02-12T15:17:21.858Z</createTimestamp>
+        <creatorRef oid="00000000-0000-0000-0000-000000000002" relation="org:default" type="c:UserType"/>
+        <createChannel>http://midpoint.evolveum.com/xml/ns/public/common/channels-3#user</createChannel>
+        <modifyTimestamp>2024-02-12T15:26:43.930Z</modifyTimestamp>
+        <modifierRef oid="00000000-0000-0000-0000-000000000002" relation="org:default" type="c:UserType"/>
+        <modifyChannel>http://midpoint.evolveum.com/xml/ns/public/common/channels-3#user</modifyChannel>
+    </metadata>
+    <lifecycleState>active</lifecycleState>
+    <connectorRef type="ConnectorType">
+		<filter>
+	        <q:equal>
+			<q:path>c:connectorType</q:path>
+	          <q:value>org.identityconnectors.databasetable.DatabaseTableConnector</q:value>
+	        </q:equal>
+	      </filter>
+	</connectorRef>
+    <connectorConfiguration xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3">
+        <icfc:configurationProperties xmlns:gen859="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.evolveum.polygon.connector-databasetable/org.identityconnectors.databasetable.DatabaseTableConnector">
+            <gen859:host><expression><const>BOOKADDRESS</const></expression></gen859:host>
+            <gen859:port>5432</gen859:port>
+            <gen859:user>midpoint</gen859:user>
+            <gen859:password>
+                <t:encryptedData>
+                    <t:encryptionMethod>
+                        <t:algorithm xmlns="http://prism.evolveum.com/xml/ns/public/types-3">http://www.w3.org/2001/04/xmlenc#aes256-cbc</t:algorithm>
+                    </t:encryptionMethod>
+                    <t:keyInfo>
+                        <t:keyName>MlVOMUMA6n4f1zdOkEfEZFrmifI=</t:keyName>
+                    </t:keyInfo>
+                    <t:cipherData>
+                        <t:cipherValue>AZmnEaiHEgbj13cl54aoiyww8ma+Y3A1Bx6RRhxi/4s=</t:cipherValue>
+                    </t:cipherData>
+                </t:encryptedData>
+            </gen859:password>
+            <gen859:database>addressbook</gen859:database>
+            <gen859:table>people</gen859:table>
+            <gen859:keyColumn>username</gen859:keyColumn>
+            <gen859:passwordColumn>password</gen859:passwordColumn>
+            <gen859:jdbcDriver>org.postgresql.Driver</gen859:jdbcDriver>
+            <gen859:jdbcUrlTemplate><expression><const>BOOKJDBCADDRESS</const></expression></gen859:jdbcUrlTemplate>
+        </icfc:configurationProperties>
+    </connectorConfiguration>
+    <schema>
+        <cachingMetadata>
+            <retrievalTimestamp>2024-02-12T15:24:02.815Z</retrievalTimestamp>
+            <serialNumber>371403ee875e0945-63117a3a2ddda9dd</serialNumber>
+        </cachingMetadata>
+        <definition>
+            <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:a="http://prism.evolveum.com/xml/ns/public/annotation-3" xmlns:ra="http://midpoint.evolveum.com/xml/ns/public/resource/annotation-3" xmlns:tns="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" elementFormDefault="qualified" targetNamespace="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">
+                <xsd:import namespace="http://prism.evolveum.com/xml/ns/public/annotation-3"/>
+                <xsd:import namespace="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"/>
+                <xsd:import namespace="http://midpoint.evolveum.com/xml/ns/public/resource/annotation-3"/>
+                <xsd:complexType name="AccountObjectClass">
+                    <xsd:annotation>
+                        <xsd:appinfo>
+                            <a:container/>
+                            <ra:resourceObject/>
+                            <ra:identifier>icfs:uid</ra:identifier>
+                            <ra:secondaryIdentifier>icfs:name</ra:secondaryIdentifier>
+                            <ra:displayNameAttribute>icfs:name</ra:displayNameAttribute>
+                            <ra:namingAttribute>icfs:name</ra:namingAttribute>
+                            <ra:nativeObjectClass>__ACCOUNT__</ra:nativeObjectClass>
+                            <ra:default>true</ra:default>
+                        </xsd:appinfo>
+                    </xsd:annotation>
+                    <xsd:sequence>
+                        <xsd:element name="last_name" type="xsd:string">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <a:displayOrder>120</a:displayOrder>
+                                    <ra:frameworkAttributeName>last_name</ra:frameworkAttributeName>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element minOccurs="0" name="tel_number" type="xsd:string">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <a:displayOrder>130</a:displayOrder>
+                                    <ra:frameworkAttributeName>tel_number</ra:frameworkAttributeName>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element minOccurs="0" name="first_name" type="xsd:string">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <a:displayOrder>140</a:displayOrder>
+                                    <ra:frameworkAttributeName>first_name</ra:frameworkAttributeName>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element minOccurs="0" name="created" type="xsd:string">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <a:displayOrder>150</a:displayOrder>
+                                    <ra:frameworkAttributeName>created</ra:frameworkAttributeName>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element minOccurs="0" name="floor" type="xsd:int">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <a:displayOrder>160</a:displayOrder>
+                                    <ra:frameworkAttributeName>floor</ra:frameworkAttributeName>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element minOccurs="0" name="fax_number" type="xsd:string">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <a:displayOrder>170</a:displayOrder>
+                                    <ra:frameworkAttributeName>fax_number</ra:frameworkAttributeName>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element minOccurs="0" name="country" type="xsd:string">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <a:displayOrder>180</a:displayOrder>
+                                    <ra:frameworkAttributeName>country</ra:frameworkAttributeName>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element minOccurs="0" name="city" type="xsd:string">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <a:displayOrder>190</a:displayOrder>
+                                    <ra:frameworkAttributeName>city</ra:frameworkAttributeName>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element minOccurs="0" name="postal_code" type="xsd:string">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <a:displayOrder>200</a:displayOrder>
+                                    <ra:frameworkAttributeName>postal_code</ra:frameworkAttributeName>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element minOccurs="0" name="office_id" type="xsd:string">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <a:displayOrder>210</a:displayOrder>
+                                    <ra:frameworkAttributeName>office_id</ra:frameworkAttributeName>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element ref="icfs:name">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <a:displayName>ConnId Name</a:displayName>
+                                    <a:displayOrder>110</a:displayOrder>
+                                    <ra:frameworkAttributeName>__NAME__</ra:frameworkAttributeName>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element minOccurs="0" name="street_address" type="xsd:string">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <a:displayOrder>220</a:displayOrder>
+                                    <ra:frameworkAttributeName>street_address</ra:frameworkAttributeName>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element minOccurs="0" name="modified" type="xsd:string">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <a:displayOrder>230</a:displayOrder>
+                                    <ra:frameworkAttributeName>modified</ra:frameworkAttributeName>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element minOccurs="0" ref="icfs:uid">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <a:displayName>ConnId UID</a:displayName>
+                                    <a:displayOrder>100</a:displayOrder>
+                                    <a:access>read</a:access>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element minOccurs="0" name="validity" type="xsd:boolean">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <a:processing>ignore</a:processing>
+                                    <a:displayOrder>240</a:displayOrder>
+                                    <ra:frameworkAttributeName>validity</ra:frameworkAttributeName>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:schema>
+        </definition>
+    </schema>
+    <schemaHandling>
+        <objectType id="15">
+            <intent>default</intent>
+            <displayName>Default Account</displayName>
+            <default>true</default>
+            <objectClass>ri:AccountObjectClass</objectClass>
+            <attribute id="22">
+                <ref>icfs:uid</ref>
+                <displayName>Entry ID</displayName>
+            </attribute>
+            <attribute id="23">
+                <ref>icfs:name</ref>
+                <displayName>Username</displayName>
+                <limitations id="28">
+                    <minOccurs>0</minOccurs>
+                </limitations>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <path>$user/name</path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute id="24">
+                <ref>ri:first_name</ref>
+                <displayName>First Name</displayName>
+                <outbound>
+                    <source>
+                        <path>$user/givenName</path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute id="25">
+                <ref>ri:last_name</ref>
+                <displayName>Last name</displayName>
+                <limitations id="29">
+                    <minOccurs>0</minOccurs>
+                </limitations>
+                <outbound>
+                    <source>
+                        <path>$user/familyName</path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute id="26">
+                <ref>ri:tel_number</ref>
+                <displayName>Telephone Number</displayName>
+                <outbound>
+                    <source>
+                        <path>$user/telephoneNumber</path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute id="27">
+                <ref>ri:city</ref>
+                <displayName>City</displayName>
+                <outbound>
+                    <source>
+                        <path>$user/locality</path>
+                    </source>
+                </outbound>
+            </attribute>
+            <activation>
+                <administrativeStatus>
+                    <outbound id="30"/>
+                </administrativeStatus>
+            </activation>
+            <credentials>
+                <password>
+                    <outbound id="35">
+                        <name>password</name>
+                        <strength>strong</strength>
+                        <source>
+                            <path>credentials/password</path>
+                        </source>
+                        <expression>
+                            <asIs/>
+                        </expression>
+                    </outbound>
+                </password>
+            </credentials>            
+            <synchronization>
+                <reaction id="18">
+                    <situation>unmatched</situation>
+                    <actions>
+                        <deleteResourceObject id="20"/>
+                    </actions>
+                </reaction>
+                <reaction id="19">
+                    <situation>linked</situation>
+                    <actions>
+                        <synchronize id="21"/>
+                    </actions>
+                </reaction>
+            </synchronization>
+        </objectType>
+    </schemaHandling>
+    <capabilities>
+        <cachingMetadata>
+            <retrievalTimestamp>2024-02-12T15:24:02.757Z</retrievalTimestamp>
+            <serialNumber>f46a23df623920ce-3be50e7485601a20</serialNumber>
+        </cachingMetadata>
+        <native xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3">
+            <cap:schema/>
+            <cap:discoverConfiguration/>
+            <cap:credentials>
+                <cap:password>
+                    <cap:returnedByDefault>false</cap:returnedByDefault>
+                </cap:password>
+            </cap:credentials>
+            <cap:liveSync/>
+            <cap:create/>
+            <cap:read>
+                <cap:returnDefaultAttributesOption>false</cap:returnDefaultAttributesOption>
+            </cap:read>
+            <cap:update>
+                <cap:addRemoveAttributeValues>true</cap:addRemoveAttributeValues>
+            </cap:update>
+            <cap:delete/>
+            <cap:testConnection/>
+            <cap:script>
+                <cap:host id="32">
+                    <cap:type>connector</cap:type>
+                </cap:host>
+            </cap:script>
+        </native>
+        <configured xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3">
+            <cap:activation>
+                <cap:status>
+                    <cap:attribute>ri:validity</cap:attribute>
+                    <cap:enableValue>true</cap:enableValue>
+                    <cap:disableValue>false</cap:disableValue>
+                    <cap:disableValue/>
+                </cap:status>
+            </cap:activation>
+        </configured>
+    </capabilities>
+</resource>
