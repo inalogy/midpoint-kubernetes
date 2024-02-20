@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: addressbook-be
+  name: addressbook
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: addressbook-be
+      app: addressbook
   template:
     metadata:
       labels:
-        app: addressbook-be
+        app: addressbook
     spec:
       volumes:
         - name: wait-for-it
@@ -46,11 +46,11 @@ spec:
             - configMapRef:
                 name: database-settings
       containers:
-        - name: addresbook-be
-          image: 'inalogy/addressbook-be'
+        - name: addresbook
+          image: 'inalogy/addressbook'
           ports:
-            - name: be
-              containerPort: 8000
+            - name: addressbook
+              containerPort: 8082
               protocol: TCP
           env:
             - name: DATABASE_NAME
